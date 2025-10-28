@@ -1,0 +1,20 @@
+[project]
+name = "netbox-zabbix-sync"
+version = "0.3.3"
+description = "Python script to synchronize Netbox devices to Zabbix. "
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["pynetbox==7.4.1", "zabbix-utils==2.0.3"]
+authors = [{ name = "Twan Kamans", email = "twan@twan-it.nl" }]
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://github.com/TheNetworkGuy/netbox-zabbix-sync/"
+Repository = "https://github.com/TheNetworkGuy/netbox-zabbix-sync/"
+Issues = "https://github.com/TheNetworkGuy/netbox-zabbix-sync/issues"
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "ERA001", "S501", "DJ", "G", "T20", "PIE", "N"]
+
+# Ignore line-length
+ignore = ["E501"]
