@@ -1,9 +1,11 @@
-# pylint: disable=duplicate-code
 """Module that hosts all functions for virtual machine processing"""
+
+from modules.config import load_config
+from modules.constants import InterfaceTypes
 from modules.device import PhysicalDevice
 from modules.exceptions import InterfaceConfigError, SyncInventoryError, TemplateError
 from modules.interface import ZabbixInterface
-from modules.config import load_config
+
 # Load config
 config = load_config()
 
@@ -39,7 +41,7 @@ class VirtualMachine(PhysicalDevice):
             self.logger.warning(e)
         return True
 
-    def setInterfaceDetails(self):  # pylint: disable=invalid-name
+    def set_interface_details(self):  # pylint: disable=invalid-name
         """
         Overwrites device function to select an agent interface type by default
         Agent type interfaces are more likely to be used with VMs then SNMP
@@ -51,7 +53,7 @@ class VirtualMachine(PhysicalDevice):
             # If not fall back to old config.
             if interface.get_context():
                 # If device is SNMP type, add aditional information.
-                if interface.interface["type"] == 2:
+                if interface.interface["type"] == InterfaceTypes.SNMP:
                     interface.set_snmp()
             else:
                 interface.set_default_agent()

@@ -1,7 +1,9 @@
 import unittest
 from unittest.mock import MagicMock, patch
+
 from modules.device import PhysicalDevice
 from modules.usermacros import ZabbixUsermacros
+
 
 class DummyNB:
     def __init__(self, name="dummy", config_context=None, **kwargs):
@@ -17,6 +19,7 @@ class DummyNB:
         if key in self.config_context:
             return self.config_context[key]
         raise KeyError(key)
+
 
 class TestUsermacroSync(unittest.TestCase):
     def setUp(self):
@@ -43,7 +46,7 @@ class TestUsermacroSync(unittest.TestCase):
         device.logger = self.logger
         device.name = "dummy"
         device._usermacro_map = MagicMock(return_value=self.usermacro_map)
-        result = device.set_usermacros()
+        device.set_usermacros()
         self.assertIsInstance(device.usermacros, list)
         self.assertGreater(len(device.usermacros), 0)
 
@@ -54,9 +57,10 @@ class TestUsermacroSync(unittest.TestCase):
         device.logger = self.logger
         device.name = "dummy"
         device._usermacro_map = MagicMock(return_value=self.usermacro_map)
-        result = device.set_usermacros()
+        device.set_usermacros()
         self.assertIsInstance(device.usermacros, list)
         self.assertGreater(len(device.usermacros), 0)
+
 
 class TestZabbixUsermacros(unittest.TestCase):
     def setUp(self):
@@ -78,7 +82,9 @@ class TestZabbixUsermacros(unittest.TestCase):
 
     def test_render_macro_dict(self):
         macros = ZabbixUsermacros(self.nb, {}, False, logger=self.logger)
-        macro = macros.render_macro("{$FOO}", {"value": "bar", "type": "secret", "description": "desc"})
+        macro = macros.render_macro(
+            "{$FOO}", {"value": "bar", "type": "secret", "description": "desc"}
+        )
         self.assertEqual(macro["macro"], "{$FOO}")
         self.assertEqual(macro["value"], "bar")
         self.assertEqual(macro["type"], "1")
@@ -120,6 +126,7 @@ class TestZabbixUsermacros(unittest.TestCase):
         result = macros.generate()
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]["macro"], "{$FOO}")
+
 
 if __name__ == "__main__":
     unittest.main()

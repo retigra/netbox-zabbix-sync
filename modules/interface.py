@@ -1,8 +1,19 @@
-#!/usr/bin/env python3
 """
 All of the Zabbix interface related configuration
 """
+
+from enum import IntEnum
+
 from modules.exceptions import InterfaceConfigError
+
+
+class InterfaceTypes(IntEnum):
+    """Enumeration for interface types."""
+
+    AGENT = 1
+    SNMP = 2
+    JMX = 3
+    IPMI = 4
 
 
 class ZabbixInterface:
@@ -16,7 +27,12 @@ class ZabbixInterface:
 
     def _set_default_port(self):
         """Sets default TCP / UDP port for different interface types"""
-        interface_mapping = {1: 10050, 2: 161, 3: 623, 4: 12345}
+        interface_mapping = {
+            InterfaceTypes.AGENT: 10050,
+            InterfaceTypes.SNMP: 161,
+            InterfaceTypes.JMX: 623,
+            InterfaceTypes.IPMI: 12345,
+        }
         # Check if interface type is listed in mapper.
         if self.interface["type"] not in interface_mapping:
             return False
@@ -30,7 +46,7 @@ class ZabbixInterface:
             zabbix = self.context["zabbix"]
             if "interface_type" in zabbix:
                 self.interface["type"] = zabbix["interface_type"]
-                if not "interface_port" in zabbix:
+                if "interface_port" not in zabbix:
                     self._set_default_port()
                     return True
                 self.interface["port"] = zabbix["interface_port"]
@@ -41,7 +57,7 @@ class ZabbixInterface:
     def set_snmp(self):
         """Check if interface is type SNMP"""
         # pylint: disable=too-many-branches
-        if self.interface["type"] == 2:
+        if self.interface["type"] == InterfaceTypes.SNMP:
             # Checks if SNMP settings are defined in NetBox
             if "snmp" in self.context["zabbix"]:
                 snmp = self.context["zabbix"]["snmp"]
@@ -95,7 +111,7 @@ class ZabbixInterface:
     def set_default_snmp(self):
         """Set default config to SNMPv2, port 161 and community macro."""
         self.interface = self.skelet
-        self.interface["type"] = "2"
+        self.interface["type"] = InterfaceTypes.SNMP
         self.interface["port"] = "161"
         self.interface["details"] = {
             "version": "2",
@@ -105,5 +121,5 @@ class ZabbixInterface:
 
     def set_default_agent(self):
         """Sets interface to Zabbix agent defaults"""
-        self.interface["type"] = "1"
+        self.interface["type"] = InterfaceTypes.AGENT
         self.interface["port"] = "10050"

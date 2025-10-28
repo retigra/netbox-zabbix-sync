@@ -10,8 +10,6 @@ class Hostgroup:
     """Hostgroup class for devices and VM's
     Takes type (vm or dev) and NB object"""
 
-    # pylint: disable=too-many-arguments, disable=too-many-positional-arguments
-    # pylint: disable=logging-fstring-interpolation
     def __init__(
         self,
         obj_type,
@@ -88,11 +86,9 @@ class Hostgroup:
             )
             format_options["rack"] = self.nb.rack.name if self.nb.rack else None
         # Variables only applicable for VM's
-        if self.type == "vm":
-            # Check if a cluster is configured. Could also be configured in a site.
-            if self.nb.cluster:
-                format_options["cluster"] = self.nb.cluster.name
-                format_options["cluster_type"] = self.nb.cluster.type.name
+        if self.type == "vm" and self.nb.cluster:
+            format_options["cluster"] = self.nb.cluster.name
+            format_options["cluster_type"] = self.nb.cluster.type.name
         self.format_options = format_options
         self.logger.debug(
             "Host %s: Resolved properties for use in hostgroups: %s",
@@ -160,14 +156,14 @@ class Hostgroup:
         Function to easily troubleshoot which values
         are generated for a specific device or VM.
         """
-        print(f"The following options are available for host {self.name}")
+        self.logger.info("The following options are available for host %s", self.name)
         for option_type, value in self.format_options.items():
             if value is not None:
-                print(f"{option_type} - {value}")
-        print("The following options are not available")
+                self.logger.info("%s - %s", option_type, value)
+        self.logger.info("The following options are not available:")
         for option_type, value in self.format_options.items():
             if value is None:
-                print(f"{option_type}")
+                self.logger.info("%s", option_type)
 
     def custom_field_lookup(self, hg_category):
         """
@@ -192,7 +188,7 @@ class Hostgroup:
         OUTPUT: STRING - Either the single child name or child and parents.
         """
         # Check if this type of nesting is supported.
-        if not nest_type in self.nested_objects:
+        if nest_type not in self.nested_objects:
             return child_object
         # If the nested flag is True, perform parent calculation
         if self.nested_objects[nest_type]["flag"]:

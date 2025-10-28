@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# pylint: disable=too-many-instance-attributes, too-many-arguments, too-many-positional-arguments, logging-fstring-interpolation
 """
 All of the Zabbix Usermacro related configuration
 """
@@ -7,6 +5,8 @@ All of the Zabbix Usermacro related configuration
 from logging import getLogger
 
 from modules.tools import field_mapper, remove_duplicates
+
+ZABBIX_MAX_TAG_LENGTH = 256
 
 
 class ZabbixTags:
@@ -54,17 +54,21 @@ class ZabbixTags:
         """
         Validates tag name
         """
-        if tag_name and isinstance(tag_name, str) and len(tag_name) <= 256:
-            return True
-        return False
+        return (
+            tag_name
+            and isinstance(tag_name, str)
+            and len(tag_name) <= ZABBIX_MAX_TAG_LENGTH
+        )
 
     def validate_value(self, tag_value):
         """
         Validates tag value
         """
-        if tag_value and isinstance(tag_value, str) and len(tag_value) <= 256:
-            return True
-        return False
+        return (
+            tag_value
+            and isinstance(tag_value, str)
+            and len(tag_value) <= ZABBIX_MAX_TAG_LENGTH
+        )
 
     def render_tag(self, tag_name, tag_value):
         """
@@ -123,10 +127,11 @@ class ZabbixTags:
         # Pull in NetBox device tags if tag_name is set
         if self.tag_name and isinstance(self.tag_name, str):
             for tag in self.nb.tags:
-                if self.tag_value.lower() in ["display", "name", "slug"]:
-                    value = tag[self.tag_value]
-                else:
-                    value = tag["name"]
+                value = (
+                    tag[self.tag_value]
+                    if self.tag_value.lower() in ["display", "name", "slug"]
+                    else tag["name"]
+                )
                 t = self.render_tag(self.tag_name, value)
                 if t:
                     tags.append(t)

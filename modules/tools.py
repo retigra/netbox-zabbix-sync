@@ -207,7 +207,7 @@ def sanatize_log_output(data):
         del sanitized_data["interfaceid"]
         # InterfaceID also hints that this is a interface update.
         # A check is required if there are no macro's used for SNMP security parameters.
-        if not "details" in data:
+        if "details" not in data:
             return sanitized_data
         for key, detail in sanitized_data["details"].items():
             # If the detail is a secret, we don't want to log it.
