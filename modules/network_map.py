@@ -192,7 +192,8 @@ class ZabbixMap:
             for orphan in sorted(orphans,reverse=True):
                 self.logger.info("Device '%s' is orphaned, removing from graph.", self.graph.vs['name'][orphan])
                 self.graph.delete_vertices(orphan)
-        self.graph.vs[0]['mass'] = 1000
+        # need better detection of 'root' device, needed for mass in weighted graphs and root position in tree graph.
+        #    self.graph.vs[0]['mass'] = 1000 
         layout = self.graph.layout(self.layout)
         layout.fit_into(bbox=self.bbox, keep_aspect_ratio=False)
          
