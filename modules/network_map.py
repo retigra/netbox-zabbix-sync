@@ -95,7 +95,9 @@ class ZabbixMap:
         
         # Generate Zabbix Map
         self.setBackground()
+    
         if self.buildZabbixMap():
+            self.logger.debug("Generated Map: %s\n", pformat(self.map))
             if not self.zabbix_id:
                self.createZabbixMap()
             else:
@@ -251,7 +253,6 @@ class ZabbixMap:
         Create new map in Zabbix
         """
         if self.map:
-            self.logger.debug("Generated Map: %s", pformat(self.map))
             try:
                 m = self.zabbix.map.create(**self.map)
                 self.zabbix_id = m["sysmapids"][0]
