@@ -197,8 +197,8 @@ class ZabbixMap:
         layout.fit_into(bbox=self.bbox, keep_aspect_ratio=False)
          
         # Debug, needs to be removed at some point 
-        out = ig.plot(self.graph, layout=layout)
-        out.save('./debug/' + self.name + '.png')
+        #out = ig.plot(self.graph, layout=layout)
+        #out.save('./debug/' + self.name + '.png')
 
         # Calculate X and Y coords for each device
         self.graph.vs['x'] = [
