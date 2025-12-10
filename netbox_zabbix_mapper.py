@@ -72,8 +72,8 @@ def main(arguments):
         # Get NetBox version
         nb_version = netbox.version
         logger.debug("NetBox version is %s.", nb_version)
-    except RequestsConnectionError:
-        logger.error(
+    except RequestsConnectionError as e:
+        logger.exception(
             "Unable to connect to NetBox with URL %s. Please check the URL and status of NetBox.",
             netbox_host,
         )
@@ -101,50 +101,84 @@ def main(arguments):
         e = f"Zabbix returned the following error: {str(e)}"
         logger.error(e)
         sys.exit(1)
-    #netbox_site_groups = convert_recordset((netbox.dcim.site_groups.all()))
-    #netbox_regions = convert_recordset(netbox.dcim.regions.all())
-    zabbix_backgrounds = zabbix.image.get(filter={'imagetype': 2}, output=["imageid", "name"])
-    zabbix_icons = zabbix.image.get(filter={'imagetype': 1}, output=["imageid", "name"])
+    # netbox_site_groups = convert_recordset((netbox.dcim.site_groups.all()))
+    # netbox_regions = convert_recordset(netbox.dcim.regions.all())
+    zabbix_backgrounds = zabbix.image.get(
+        filter={"imagetype": 2}, output=["imageid", "name"]
+    )
+    zabbix_icons = zabbix.image.get(filter={"imagetype": 1}, output=["imageid", "name"])
     zabbix_iconmaps = zabbix.iconmap.get(output=["iconmapid", "name"])
     netbox_journals = netbox.extras.journal_entries
     netbox_sites = list(netbox.dcim.sites.filter(**config["map_site_filter"]))
 
     # verify we have a default icon, this is mandatory!
     iconid = None
-    if config['map_default_icon']:
-        result = (next(filter(lambda x: x['name'] == config['map_default_icon'], zabbix_icons), None))
+    if config["map_default_icon"]:
+        result = next(
+            filter(lambda x: x["name"] == config["map_default_icon"], zabbix_icons),
+            None,
+        )
         if result:
-            iconid = result['imageid']
-            logger.info("Using default icon '%s' (ID:%s) for all map elements.", config['map_default_icon'], iconid )
+            iconid = result["imageid"]
+            logger.info(
+                "Using default icon '%s' (ID:%s) for all map elements.",
+                config["map_default_icon"],
+                iconid,
+            )
         else:
-            logger.error("Default icon '%s' not found in Zabbix, can not continue.", config['map_default_icon'])
+            logger.error(
+                "Default icon '%s' not found in Zabbix, can not continue.",
+                config["map_default_icon"],
+            )
             exit(1)
     else:
-        logger.error("Default icon not set in config.py, can not continue.", config['map_default_icon'])
+        logger.error(
+            "Default icon not set in config.py, can not continue.",
+            config["map_default_icon"],
+        )
         exit(1)
 
     # verify we have the configured iconmap
     iconmapid = None
-    if config['map_iconmap']:
-        result = (next(filter(lambda x: x['name'] == config['map_iconmap'], zabbix_iconmaps), None))
+    if config["map_iconmap"]:
+        result = next(
+            filter(lambda x: x["name"] == config["map_iconmap"], zabbix_iconmaps), None
+        )
         if result:
-            iconmapid = result['iconmapid']
-            logger.info("Using iconmap '%s' (ID:%s) for all maps.", config['map_iconmap'], iconmapid)
+            iconmapid = result["iconmapid"]
+            logger.info(
+                "Using iconmap '%s' (ID:%s) for all maps.",
+                config["map_iconmap"],
+                iconmapid,
+            )
         else:
-            logger.warning("Default iconmap '%s' not found in Zabbix. Disabling iconmap usage.", config['map_iconmap'])
-        
+            logger.warning(
+                "Default iconmap '%s' not found in Zabbix. Disabling iconmap usage.",
+                config["map_iconmap"],
+            )
+
     # verify we have the default background
     bgid = None
-    if config['map_default_bg']:
-        result = (next(filter(lambda x: x['name'] == config['map_default_bg'], zabbix_backgrounds), None))
+    if config["map_default_bg"]:
+        result = next(
+            filter(lambda x: x["name"] == config["map_default_bg"], zabbix_backgrounds),
+            None,
+        )
         if result:
-            bgid = result['imageid']
-            logger.info("Found default background '%s' (ID:%s) to use for all maps.", config['map_default_bg'], bgid)
+            bgid = result["imageid"]
+            logger.info(
+                "Found default background '%s' (ID:%s) to use for all maps.",
+                config["map_default_bg"],
+                bgid,
+            )
         else:
-            logger.warning("Default map background '%s' not found in Zabbix. Disabling default backgound usage.", config['map_default_bg'])
+            logger.warning(
+                "Default map background '%s' not found in Zabbix. Disabling default backgound usage.",
+                config["map_default_bg"],
+            )
 
     # check minimum trigger priority for maps
-    zprio=zabbixTriggerPrio(config['map_trigger_prio'])
+    zprio = zabbixTriggerPrio(config["map_trigger_prio"])
     if zprio is False:
         logger.error("'map_trigger_prio' in config.py is not a valid severity.")
         exit(1)
@@ -153,12 +187,18 @@ def main(arguments):
         logger.info("Processing site '%s'.", nb_site.name)
         site_devices = []
         network_map = None
-        for device in netbox.dcim.devices.filter(site_id=nb_site['id']):
-            if (device.custom_fields[config['device_cf']] and
-                  device.custom_fields[config['device_cf']] > 0):
+        for device in netbox.dcim.devices.filter(site_id=nb_site["id"]):
+            if (
+                device.custom_fields[config["device_cf"]]
+                and device.custom_fields[config["device_cf"]] > 0
+            ):
                 site_devices.append(device)
         if len(site_devices) > 0:
-            logger.info("Found %s Zabbix devices in site '%s', starting network mapper.", len(site_devices), nb_site.name)
+            logger.info(
+                "Found %s Zabbix devices in site '%s', starting network mapper.",
+                len(site_devices),
+                nb_site.name,
+            )
             network_map = ZabbixMap(
                 nb_site,
                 site_devices,
@@ -177,6 +217,7 @@ def main(arguments):
         else:
             logger.info("No zabbix devices found in site '%s', skipping.", nb_site.name)
     zabbix.logout()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
