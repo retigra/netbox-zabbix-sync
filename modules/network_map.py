@@ -108,7 +108,7 @@ class ZabbixMap:
         """
         connections = []
         for device in self.devices:
-            self.logger.info("Processing device '%s'.", device.name)
+            self.logger.info("Processing device '%s'. (ID:%s)", device.name, device.custom_fields[config['device_cf']])
             myindex = self.devices.index(device)
             interfaces = []
 
