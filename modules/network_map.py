@@ -136,7 +136,7 @@ class ZabbixMap:
                                 peerindex = self.devices.index(site_device)
                                 break
                 # If we've found a connection with a Zabbix host, continue processing
-                if peerindex or peerindex==0:
+                if (peerindex or peerindex==0) and peerindex != myindex:
                     self.logger.debug("Found connection: '%s' (%s) -> '%s' (%s)", 
                                       device.name, interface.name, 
                                       peer.device.name, peer.name)
