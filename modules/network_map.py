@@ -9,7 +9,7 @@ from logging import getLogger
 from typing import Any
 from random import randint
 
-from pprint import pprint
+from pprint import pformat, pprint
 
 from pynetbox import RequestError as NetboxRequestError
 from zabbix_utils import APIRequestError
@@ -250,11 +250,12 @@ class ZabbixMap:
         Create new map in Zabbix
         """
         if self.map:
+            self.logger.debug("Generated Map: %s", pformat(self.map))
             try:
                 m = self.zabbix.map.create(**self.map)
                 self.zabbix_id = m["sysmapids"][0]
             except APIRequestError as e:
-                msg = f"Map {self.name}: Failed to create. Zabbix returned {str(e)}."
+                msg = f"Map '{self.name}': Failed to create. Zabbix returned {str(e)}."
                 self.logger.error(msg)
                 raise SyncExternalError(msg) from e
             # Set NetBox custom field to ID value.
