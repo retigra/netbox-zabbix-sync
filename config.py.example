@@ -12,8 +12,30 @@ templates_config_context_overrule = False
 template_cf = "zabbix_template"
 device_cf = "zabbix_hostid"
 
+# Zabbix host description
+# The following options are available for the description of all created hosts in Zabbix
+# static: Uses the default static string "Host added by NetBox sync script."
+# dynamic: "Uses a predefined dynamic string which resolves the owner of an object and datetime. Recommended for users who use Netbox 4.5+
+# custom: Use a custom string such as "This host was created by Zabbix-sync on machine MGMT01.internal". It is also posible to resolve dynamic values in this string using {} markers.
+description = "static"
+# The timedate format which is used for generating the datetime macro when used in the dynamic description type or custom type.
+description_dt_format = "%Y-%m-%d %H:%M:%S"
+
 ## Enable clustering of devices with virtual chassis setup
 clustering = False
+
+## Extend Virtual Chassis Information
+# When set to True, the script will pull extended virtual chassis information which is then available for use in usermacros, tags and inventory.
+# Be aware that this will increase the number of API queries to NetBox.
+extended_virtual_chassis = False
+
+## Preferred IP version
+# This setting determines which IP address will be used for the Zabbix host interface when a device has multiple IP addresses assigned.
+# The following options are available:
+# auto: Use primary_ip field by NetBox. (default)
+# ipv4: Prefer IPv4 address over IPv6 address.
+# ipv6: Prefer IPv6 address over IPv4 address.
+preferred_ip = "auto"
 
 ## Enable hostgroup generation. Requires permissions in Zabbix
 create_hostgroups = True
@@ -21,11 +43,19 @@ create_hostgroups = True
 ## Create journal entries
 create_journal = False
 
+## Sync Out-Of-Band IPs
+# When set to True, the script will create an additional Zabbix interface for the OOB IP set configured on the device in NetBox.
+# This will need to be a different interface typ than the interface type used for the primary interface.
+# This can be configured through config contxt, see documentation for futher info:
+# https://github.com/TheNetworkGuy/netbox-zabbix-sync/wiki/Sync-Behavior#set-interface-parameters-within-netbox
+oob_sync = False
+
 ## Virtual machine sync
 # Set sync_vms to True in order to use this new feature
 # Use the hostgroup vm_hostgroup_format mapper for specific
 # hostgroup atributes of VM's such as cluster_type and cluster
 sync_vms = False
+
 # Check the README documentation for values to use in the VM hostgroup format.
 vm_hostgroup_format = "cluster_type/cluster/role"
 
@@ -53,9 +83,9 @@ hostgroup_format = "site/manufacturer/role"
 traverse_regions = False
 traverse_site_groups = False
 
-## Extended site properteis
+## Extended site properties
 # By default, NetBox will only return basic site info for any device or VM.
-# By setting `extended_site_properties` to True, the script will query NetBox for additiopnal site info.
+# By setting `extended_site_properties` to True, the script will query NetBox for additional site info.
 # Be aware that this will increase the number of API queries to NetBox.
 extended_site_properties = False
 
@@ -157,3 +187,14 @@ device_tag_map = {"site/name": "site",
 vm_tag_map = {"site/name": "site",
               "cluster/name": "cluster",
               "platform/name": "target"}
+
+
+### EXPERIMENTAL FEATURES
+# The features below are experimental and should be run on your own risk.
+# Please see https://github.com/TheNetworkGuy/netbox-zabbix-sync/wiki/Experimental-Features
+
+## Render Config Context with Jinja2
+# When set to true, this will enable rendering of Jinja2 within the Zabbix key in config context.
+# This will allow you to perform advanced NetBox lookups and transform data before passing it to Zabbix.
+# See https://github.com/TheNetworkGuy/netbox-zabbix-sync/wiki/Experimental-Features#config-context-rendering
+render_config_context = False

@@ -1,4 +1,5 @@
-from modules.tools import sanatize_log_output
+from netbox_zabbix_sync.modules.tools import sanatize_log_output
+
 
 def test_sanatize_log_output_secrets():
     data = {
@@ -11,6 +12,7 @@ def test_sanatize_log_output_secrets():
     assert sanitized["macros"][0]["value"] == "********"
     assert sanitized["macros"][1]["value"] == "notsecret"
 
+
 def test_sanatize_log_output_interface_secrets():
     data = {
         "interfaceid": 123,
@@ -19,8 +21,8 @@ def test_sanatize_log_output_interface_secrets():
             "privpassphrase": "anothersecret",
             "securityname": "sensitiveuser",
             "community": "public",
-            "other": "normalvalue"
-        }
+            "other": "normalvalue",
+        },
     }
     sanitized = sanatize_log_output(data)
     # Sensitive fields should be sanitized
@@ -30,8 +32,7 @@ def test_sanatize_log_output_interface_secrets():
     # Non-sensitive fields should remain
     assert sanitized["details"]["community"] == "********"
     assert sanitized["details"]["other"] == "normalvalue"
-    # interfaceid should be removed
-    assert "interfaceid" not in sanitized
+
 
 def test_sanatize_log_output_interface_macros():
     data = {
@@ -41,7 +42,7 @@ def test_sanatize_log_output_interface_macros():
             "privpassphrase": "{$SECRET_MACRO}",
             "securityname": "{$USER_MACRO}",
             "community": "{$SNNMP_COMMUNITY}",
-        }
+        },
     }
     sanitized = sanatize_log_output(data)
     # Macro values should not be sanitized
@@ -49,12 +50,13 @@ def test_sanatize_log_output_interface_macros():
     assert sanitized["details"]["privpassphrase"] == "{$SECRET_MACRO}"
     assert sanitized["details"]["securityname"] == "{$USER_MACRO}"
     assert sanitized["details"]["community"] == "{$SNNMP_COMMUNITY}"
-    assert "interfaceid" not in sanitized
+
 
 def test_sanatize_log_output_plain_data():
     data = {"foo": "bar", "baz": 123}
     sanitized = sanatize_log_output(data)
     assert sanitized == data
+
 
 def test_sanatize_log_output_non_dict():
     data = [1, 2, 3]

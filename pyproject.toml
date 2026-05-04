@@ -1,0 +1,97 @@
+[project]
+name = "netbox-zabbix-sync"
+description = "Python script to synchronize Netbox devices to Zabbix."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "igraph>=1.0.0",
+    "j2ipaddr>=1.0.6",
+    "jinja2>=3.1.6",
+    "pynetbox>=7.6.1",
+    "python-dateutil>=2.9.0.post0",
+    "python-jsonpath>=2.0.2",
+    "zabbix-utils>=2.0.4",
+]
+dynamic = ["version"]
+
+[project.urls]
+"Homepage" = "https://github.com/TheNetworkGuy/netbox-zabbix-sync"
+"Issues" = "https://github.com/TheNetworkGuy/netbox-zabbix-sync/issues"
+
+[project.scripts]
+netbox-zabbix-sync = "netbox_zabbix_sync.modules.cli:parse_cli"
+
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["netbox_zabbix_sync*"]
+
+[tool.setuptools_scm]
+version_file = "netbox_zabbix_sync/_version.py"
+
+[tool.ruff.lint]
+ignore = [
+    # Ignore line-length
+    "E501",
+    # Ignore too many arguments
+    "PLR0913",
+    # Ignore too many statements
+    "PLR0915",
+    # Ignore too many branches
+    "PLR0912",
+]
+
+select = [
+    # commented-out-code
+    "ERA001",
+    # flake8-bandit
+    "S",
+    # flake8-logging-format
+    "G",
+    # flake8-print
+    "T20",
+    # pep8-naming
+    "N",
+    # Pyflakes
+    "F",
+    # pycodestyle
+    "E",
+    # isort
+    "I",
+    # pep8-naming
+    "N",
+    # pyupgrade
+    "UP",
+    # flake8-2020
+    "YTT",
+    # flake8-async
+    "ASYNC",
+    # flake8-bugbear
+    "B",
+    # flake8-executable
+    "EXE",
+    # flake8-pie
+    "PIE",
+    # flake8-pyi
+    "PYI",
+    # flake8-simplify
+    "SIM",
+    # pylint
+    "PL",
+    # Ruff-specific rules
+    "RUF",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+    # Ignore use of assert
+    "S101",
+    # Ignore hardcoded passwords / tokens
+    "S106",
+]
+
+
+[dependency-groups]
+dev = ["pytest>=9.0.2", "pytest-cov>=7.0.0", "ruff>=0.14.14", "ty>=0.0.14"]

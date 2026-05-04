@@ -2,6 +2,10 @@
 
 A script to create, update and delete Zabbix hosts using NetBox device objects. Tested and compatible with all [currently supported Zabbix releases](https://www.zabbix.com/life_cycle_and_release_policy).
 
+# Documentation
+
+Documentation will be moved to the Github wiki of this project. Feel free to [check it out](https://github.com/TheNetworkGuy/netbox-zabbix-sync/wiki)!
+
 ## Installation via Docker
 
 To pull the latest stable version to your local cache, use the following docker
@@ -349,8 +353,8 @@ For Virtual Machines, use `vm_inventory_map`.
 ```python
 inventory_sync = True
 inventory_mode = "manual"
-device_inventory_map = {"custom_fields/mycustomfield/name": "alias"}
-vm_inventory_map = {"custom_fields/mycustomfield/name": "alias"}
+device_inventory_map = {"custom_fields/mycustomfield": "alias"}
+vm_inventory_map = {"custom_fields/mycustomfield": "alias"}
 ```
 
 See `config.py.example` for an extensive example map. Any Zabbix Inventory fields
@@ -416,7 +420,7 @@ making NetBox the single source-of-truth for managing tags.
 
 To enable syncing, turn on `tag_sync` in the config file.
 By default, this script will modify tag names and tag values to lowercase.
-You can change this behaviour by setting `tag_lower` to `False`.
+You can change this behavior by setting `tag_lower` to `False`.
 
 ```python
 tag_sync = True
@@ -684,7 +688,7 @@ Devices and VMs.
 You can also assign these custom fields to a site to allow all devices/VMs
 in that site to be configured with the same proxy or proxy group.
 In order for this to work, `extended_site_properties` needs to be enabled in
-the configuation as well.
+the configuration as well.
 
 To use the custom fields for proxy configuration, configure one or both 
 of the following settings in the configuration file with the actual names of your 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# pylint: disable=too-many-instance-attributes, too-many-arguments, too-many-positional-arguments, logging-fstring-interpolation
 """
 All of the Zabbix Usermacro related configuration
 """
@@ -7,7 +5,9 @@ All of the Zabbix Usermacro related configuration
 from logging import getLogger
 from re import match
 
-from modules.tools import field_mapper, sanatize_log_output
+from netbox_zabbix_sync.modules.tools import field_mapper, sanatize_log_output
+
+MAX_VALUE_SIZE = 2048
 
 
 class ZabbixUsermacros:
@@ -57,7 +57,7 @@ class ZabbixUsermacros:
         if self.validate_macro(macro_name):
             macro["macro"] = str(macro_name)
             if isinstance(macro_properties, dict):
-                if not "value" in macro_properties:
+                if "value" not in macro_properties:
                     self.logger.info(
                         "Host %s: Usermacro %s has no value in Netbox, skipping.",
                         self.name,
@@ -98,6 +98,14 @@ class ZabbixUsermacros:
                 "Host %s: Usermacro %s is not a valid usermacro name, skipping.",
                 self.name,
                 macro_name,
+            )
+            return False
+        if len(macro["value"]) > MAX_VALUE_SIZE:
+            self.logger.warning(
+                "Host %s: Usermacro %s has a value that is %s bytes which is too large, skipping.",
+                self.name,
+                macro_name,
+                len(macro["value"]),
             )
             return False
         return macro

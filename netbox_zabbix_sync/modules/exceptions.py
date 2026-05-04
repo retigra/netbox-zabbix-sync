@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 All custom exceptions used for Exception generation
 """
@@ -34,6 +33,14 @@ class InterfaceConfigError(SyncError):
 
 class ProxyConfigError(SyncError):
     """Class ProxyConfigError"""
+
+
+class JinjaRenderError(SyncError):
+    """Class JinjaRenderError"""
+
+
+class JinjaFilterError(SyncError):
+    """Class JinjaFilterError"""
 
 
 class HostgroupError(SyncError):
