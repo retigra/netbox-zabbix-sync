@@ -401,7 +401,8 @@ class ZabbixMap:
                                 t={'triggerid': trigger['triggerid'], 
                                    'color': zabbixTriggerColor(trigger['priority']),
                                    'drawtype': 4, 'linkid': idx}     
-                                link['linktriggers'].append(t)
+                                if t not in link['linktriggers']:
+                                    link['linktriggers'].append(t)
             return links
 
     def setBackground(self):

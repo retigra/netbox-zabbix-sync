@@ -4,6 +4,7 @@ from collections import OrderedDict
 from modules.exceptions import HostgroupError
 from modules.config import load_config
 
+
 config = load_config()
 
 def convert_recordset(recordset):
